@@ -1,0 +1,72 @@
+<Interface>:
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 2*[30,40]
+		spacing: 15
+		BoxLayout:
+			Label:
+				text: 'Image here'
+			Label:
+				text: 'Triton-FPR Project. HCMR 2014'
+		Button:
+			id: select_button
+			text: 'Select An image'
+			on_press: root.show_load()
+		Button:
+			text: 'Perform Spieces Identification'
+			on_press: root.perform_identification()
+		Button:
+			id: about_button
+			text: 'About'
+			on_press: root.foo()
+		Button:
+			id: exit_button
+			text: 'Exit'
+			on_press: exit()
+			
+<LoadDialog>:
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 2*[30,40]
+		TextInput:
+			id: load_text_input
+		BoxLayout:
+			orientation: 'horizontal'
+			spacing: 15
+			padding: 2*[30,40]
+			Button:
+				id: load_button
+				text: 'Load'
+				on_press: root.load()
+			Button:
+				id: cancel_button
+				text: 'Cancel'
+				on_press: root.cancel()
+		
+<IdentifierInterface>:
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 2*[30,40]
+		spacing: 15
+		Image:
+			source: selected_image_filename
+		Label:
+			text: 'Fish Name'
+			size: 18
+		Label:
+			text: 'Identification Output'
+		Label:
+			id: output_label
+			text: root.get_artifacts()
+		Button:
+			id: morph_button
+			text: 'Get Morphometrics'
+			on_press: root.show_morphometrics()
+		Button:
+			id: gen_report_button
+			text: 'Generate Report'
+		Button:
+			id: close_button
+			text: 'Close'
+			on_press: identifier_interface_popup.dismiss()
+	
