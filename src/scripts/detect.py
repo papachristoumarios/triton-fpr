@@ -4,11 +4,11 @@ import sys
 import cv,cv2
 import numpy
 
-"""Feature detector"""
+"""Feature detector script"""
 __doc__ = '''Usage: ./detect.py /dir/image.jpg /dir2/cascade.xml'''
 
 def detect(image,cascade):
-	"""OBSOLETE: Uses cv (v1)"""
+	"""Haar-like Feature detection function. OBSOLETE: Uses cv (v1)"""
 	bitmap = cv.fromarray(image)
 	faces = cv.HaarDetectObjects(bitmap, cascade, cv.CreateMemStorage(0))
 	if faces:
@@ -18,6 +18,8 @@ def detect(image,cascade):
 
 	
 def detect2(image, cascade):
+	"""Haar-like Feature detection function. Uses cv2"""
+	
 	features = cascade.detectMultiScale(image)
 	if len(features) is not 0:
 		for (x,y,w,h) in features:

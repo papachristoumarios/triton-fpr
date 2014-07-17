@@ -1,13 +1,16 @@
 #general imports
-import Image,cv2; import numpy as np
+import Image,cv2,sys,platform; import numpy as np
+
+#kivy imports
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
 #parent imports
-from ... import fish
-from .... import identifier
 
+sys.path.append('../..')
+import lib.fish as fish
+import identifier
 
 #global vars
 global fishbase
@@ -32,6 +35,22 @@ class LoadDialog(BoxLayout):
 	def cancel(self):
 		"""Dismisses the popup"""
 		load_popup.dismiss()
+		
+class AboutDialog(BoxLayout):
+	
+	def get_about_text(self):
+		about_txt = '''Copyright HCMR 2014 - Triton FPR Project
+		This project is released under the {add licensing} License
+		Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
+		
+		return about_txt
+		
+	def go_to_homepage(self):
+		from os import system
+		system('xdg-open http://http://www.hcmr.gr/en/')
+		
+	def close(self):
+		about_dialog_popup.dismiss()	
 		
 class IdentifierInterface(BoxLayout):
 	
@@ -68,13 +87,19 @@ class Interface(BoxLayout):
 		content=IdentifierInterface(),
 		size_hint=(None,None), size=(500,500))
 		identifier_interface_popup.open()
+	
+	def show_about_dialog(self):
+		global about_dialog_popup
+		about_dialog_popup = Popup(title= 'About',
+		content = AboutDialog(),
+		size_hint=(None,None), size=(500,500))
+		about_dialog_popup.open()
+		
 		
 	def perform_identification(self):
 		global identification_elements
 		identification_elements = identifier.identify(selected_image, fishbase, detectCharacteristics=False)
-		
-		
-
+	
 class MainGUIApp(App):
 
 	def build(self):

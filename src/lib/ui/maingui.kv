@@ -4,8 +4,9 @@
 		padding: 2*[30,40]
 		spacing: 15
 		BoxLayout:
-			Label:
-				text: 'Image here'
+			Image:
+				id: banner_image
+				source: '../../../res/logo/bitmap/banner_90dpi.png'
 			Label:
 				text: 'Triton-FPR Project. HCMR 2014'
 		Button:
@@ -18,7 +19,7 @@
 		Button:
 			id: about_button
 			text: 'About'
-			on_press: root.foo()
+			on_press: root.show_about_dialog()
 		Button:
 			id: exit_button
 			text: 'Exit'
@@ -69,4 +70,23 @@
 			id: close_button
 			text: 'Close'
 			on_press: identifier_interface_popup.dismiss()
+			
+<AboutDialog>
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 2*[30,40]
+		spacing: 15
+		Label:
+			id: about_label
+			text: root.get_about_text()
+		Button:
+			id: homepage_btn
+			on_press: root.go_to_homepage()
+			text: 'Visit homepage'
+		Button:
+			text: 'Close'
+			on_press: root.close()
+			
+
+
 	

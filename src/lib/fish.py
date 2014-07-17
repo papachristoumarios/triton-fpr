@@ -1,6 +1,6 @@
 class Fish:
-
-	def __init__(self, name, bodycascade, fcscascades = [], cHL=None, cFL=None, cSL=None):
+	"""Stores info for each fish"""
+	def __init__(self, name, bodycascade, fcscascades = [], cHL=None, cFL=None, cSL=None): #TODO Add stage/age
 		self.name = name; self.bodycascade = cascade
 		self.fcascades = fcascades
 		self.morphometrics = Morphometrics(cHL, cFL, cSL)
@@ -9,7 +9,7 @@ class Fish:
 		return self.name
 			
 class Morphometrics(Fish):
-"""Morphometrics are stored at this class"""
+	"""Morphometrics are stored at this class"""
 	def __init__(self, cHL, cFL, cSL):
 		self.cHL, self.cFL, cSL =  cHL, cFL, cSL
 		self.names =   {'Head Length' : self.cHL,
@@ -32,21 +32,10 @@ class Morphometrics(Fish):
 	def query(artifact,base):
 		for f in base:
 			if f.name is artifact:
-				return f.name + '\n' + str(f.morphometrics) + '\n'
-		
-			
-	
-class FishDatabase(Database):
-"""Database for fishes"""	
-	def __init__(self, imembers=[], name, user):
-		self.members = [] + imembers
-		super(Database, self).__init__(name, user)
-	
-	def append_member(self, m):
-		self.members.append(m)
-		
+				return f.name + '\n' + str(f.morphometrics) + '\n'		
+
 class Database:
-"""Handle databases SQL"""
+	"""Handle databases (SQL/PostgreSQL)"""
 	def __init__(self, name,user):
 		#import sqlite3 as db
 		#PostgreSQL
@@ -59,5 +48,14 @@ class Database:
 		
 	def execute(self, cmd):
 		self.cursor.execute(cmd)
+	
+class FishDatabase(Database):
+	"""Database for fishes"""	
+	def __init__(self, imembers=[], name='testdb', user='testuser'):
+		self.members = [] + imembers
+		#super(Database, self).__init__(name, user)
+	
+	def append_member(self, m):
+		self.members.append(m)
 		
-		
+
