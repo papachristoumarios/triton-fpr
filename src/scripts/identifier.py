@@ -1,8 +1,5 @@
-from lib.fish import *
-import sys
-
 #sys.path.append('scripts/')
-import scripts.detector as detector 
+
 
 #scripts.detect.detect2 returns:
 # elements[4] [0]: image, [1]: NOF, [2]: true if found, [3]:coordinates
@@ -37,7 +34,9 @@ class ComplexIdentification:
 #TODO Add main method for tests
 
 if __name__ == '__main__':
-	pass 
+	import fish,detector
+	import sys
+	pass
 
 
 
