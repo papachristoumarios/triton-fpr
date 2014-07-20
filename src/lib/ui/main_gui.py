@@ -13,10 +13,10 @@ import lib.fish as fish
 import identifier
 
 #global vars
-global fishbase
+#global fishbase
 global selected_image_filename
 global selected_image
-fishbase = fish.FishDatabase()
+#fishbase = fish.FishDatabase()
 
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
@@ -106,4 +106,9 @@ class MainGUIApp(App):
 		return Interface()
 
 if __name__ == '__main__':
+	#general imports
+	sys.path.append('../..')
+	from base import *
+
+	
 	MainGUIApp().run()

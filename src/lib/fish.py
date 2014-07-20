@@ -58,4 +58,11 @@ class FishDatabase(Database):
 	def append_member(self, m):
 		self.members.append(m)
 		
+	def get_members_as_string(self):
+		s = []
+		for m in self.members:
+			s.append(str(m))
+		return s
+		
+		
 

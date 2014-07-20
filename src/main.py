@@ -5,8 +5,8 @@ from base import *
 COMMAND_LINE_APP = False
 
 if __name__ == '__main__':
-	if sys.argv[1] is '--cli'
-		COMMAND_LINE_APP = True
+	#if sys.argv[1] is '--cli':
+	#	COMMAND_LINE_APP = True
 	
 	
 	if COMMAND_LINE_APP is False:

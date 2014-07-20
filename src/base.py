@@ -31,3 +31,18 @@ import scripts.identifier as identifier
 import lib.ui.main_gui as main_gui
 #cli
 import lib.cli.main_cli as main_cli
+
+def initialize_fishbase():
+	global fishbase
+	fishbase = fish.FishDatabase()
+	#fish_a = ...
+	#fish_b = ...
+	#fishbase.append_member(fish_a)
+	#fishbase.append_member(fish_b)
+	#TODO Add some fish
+	
+initialize_fishbase()
+	
+	
+	
+	
