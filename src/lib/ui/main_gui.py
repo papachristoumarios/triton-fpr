@@ -7,25 +7,27 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
 #parent imports
-
 sys.path.append('../..')
 import lib.fish as fish
 import identifier
+import lib.shape_analyzer as shape_analyzer
 
 #global vars
 #global fishbase
 global selected_image_filename
-global selected_image
 #fishbase = fish.FishDatabase()
 
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
 	def load(self):
 		"""Loads defined image"""
+		global selected_image
+		global chanelled_image
 		selected_image_filename = self.ids['load_text_input'].text
 		try:
 			Image.open(selected_image_filename)
 			selected_image = cv2.imread(selected_image_filename)
+			chanelled_image = cv2.imread(selected_image_filename,0)
 			print selected_image_filename + ' loaded'
 			load_popup.dismiss()
 		except IOError:
@@ -67,10 +69,13 @@ class IdentifierInterface(BoxLayout):
 			m = fish.Morphometrics().query(k, fishbase)
 			self.ids['output_label'].text += m
 		
-		
-
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
+	
+	def get_banner(self):
+		return '../../../res/logo/bitmap/banner_90dpi.png'
+
+	
 	def foo(self):
 		print 'foo'
 		
@@ -99,7 +104,22 @@ class Interface(BoxLayout):
 	def perform_identification(self):
 		global identification_elements
 		identification_elements = identifier.identify(selected_image, fishbase, detectCharacteristics=False)
-	
+		
+	def perform_shape_analysis(self):
+		global selected_image_shape_analyzer
+		selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image)
+		selected_image_shape_analyzer.draw_extreme_points_lines()
+		selected_image_shape_analyzer.draw_details()
+		selected_image_shape_analyzer.write_final_image('/home/marios')
+		print 'OK'
+		
+		
+	def clear_all(self):
+		identification_elements = None
+		selected_image = None
+		selected_image_filename = None
+		
+
 class MainGUIApp(App):
 
 	def build(self):
@@ -109,6 +129,4 @@ if __name__ == '__main__':
 	#general imports
 	sys.path.append('../..')
 	from base import *
-
-	
 	MainGUIApp().run()

@@ -24,6 +24,7 @@ from kivy.uix.popup import Popup
 #lib package
 import lib.fish as fish
 import lib.manipulator as manipulator
+import lib.shape_analyzer as shape_analyzer
 #scripts package
 import scripts.detector as detector
 import scripts.identifier as identifier

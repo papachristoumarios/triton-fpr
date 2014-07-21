@@ -6,16 +6,26 @@
 		BoxLayout:
 			Image:
 				id: banner_image
-				source: '../../../res/logo/bitmap/banner_90dpi.png'
+				source: root.get_banner()
 			Label:
 				text: 'Triton-FPR Project. HCMR 2014'
-		Button:
-			id: select_button
-			text: 'Select An image'
-			on_press: root.show_load()
-		Button:
-			text: 'Perform Spieces Identification'
-			on_press: root.perform_identification()
+		BoxLayout:
+			orientation: 'horizontal'
+			Button:
+				id: select_button
+				text: 'Select An image'
+				on_press: root.show_load()
+			Button:
+				text: 'Clear All'
+				on_press: root.clear_all()
+		BoxLayout:
+			orientation: 'horizontal'
+			Button:
+				text: 'Perform Spieces Identification'
+				on_press: root.perform_identification()
+			Button:
+				text: 'Perform Shape Analysis'
+				on_release: root.perform_shape_analysis()
 		Button:
 			id: about_button
 			text: 'About'

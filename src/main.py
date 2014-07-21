@@ -3,6 +3,7 @@
 from base import *
 
 COMMAND_LINE_APP = False
+BANNER = '../../res/logo/bitmap/banner_90dpi.png'
 
 if __name__ == '__main__':
 	#if sys.argv[1] is '--cli':
