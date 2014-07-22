@@ -13,9 +13,8 @@ import identifier
 import lib.shape_analyzer as shape_analyzer
 
 #global vars
-#global fishbase
 global selected_image_filename
-#fishbase = fish.FishDatabase()
+
 
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
@@ -41,17 +40,20 @@ class LoadDialog(BoxLayout):
 class AboutDialog(BoxLayout):
 	
 	def get_about_text(self):
+		"""Returns the about text"""
 		about_txt = '''Copyright HCMR 2014 - Triton FPR Project
-		This project is released under the {add licensing} License
-		Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
+This project is released under the {add licensing} License
+Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
 		
 		return about_txt
 		
 	def go_to_homepage(self):
+		"""Opens homepage via xdg-open"""
 		from os import system
 		system('xdg-open http://http://www.hcmr.gr/en/')
 		
 	def close(self):
+		"""Closes the popup"""
 		about_dialog_popup.dismiss()	
 		
 class IdentifierInterface(BoxLayout):
@@ -68,14 +70,35 @@ class IdentifierInterface(BoxLayout):
 		for k in identification_elements.keys():
 			m = fish.Morphometrics().query(k, fishbase)
 			self.ids['output_label'].text += m
+			
+class ShapeAnalyzerInterface(BoxLayout):
+	
+	def close(self):
+		shape_analyzer_popup.dismiss()
 		
+	def refresh(self):
+		self.ids['shape_analyzed_image'].reload()
+		
+	def draw_el(self):
+		selected_image_shape_analyzer.draw_extreme_points_lines()
+		selected_image_shape_analyzer.write_final_image('/tmp')
+		self.refresh()
+		
+	def draw_ml(self):
+		#EXAMPLE! CAUTION DO NOT USE
+		
+		f1 = fish.Fish('f1',cHL = 0.25, cFL = 0.3, cSL = 0.1)
+		selected_image_shape_analyzer.draw_morphometric_lines_according_to_specimen(f1)
+		selected_image_shape_analyzer.write_final_image('/tmp')
+		#EOE
+		self.refresh()
+				
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
 	
 	def get_banner(self):
 		return '../../../res/logo/bitmap/banner_90dpi.png'
 
-	
 	def foo(self):
 		print 'foo'
 		
@@ -100,7 +123,6 @@ class Interface(BoxLayout):
 		size_hint=(None,None), size=(500,500))
 		about_dialog_popup.open()
 		
-		
 	def perform_identification(self):
 		global identification_elements
 		identification_elements = identifier.identify(selected_image, fishbase, detectCharacteristics=False)
@@ -108,21 +130,24 @@ class Interface(BoxLayout):
 	def perform_shape_analysis(self):
 		global selected_image_shape_analyzer
 		selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image)
-		selected_image_shape_analyzer.draw_extreme_points_lines()
-		selected_image_shape_analyzer.draw_details()
-		selected_image_shape_analyzer.write_final_image('/home/marios')
-		print 'OK'
-		
+		selected_image_shape_analyzer.write_final_image('/tmp')
+		global shape_analyzer_popup
+		shape_analyzer_popup = Popup(title= 'Shape Analyzer',
+		content = ShapeAnalyzerInterface(),
+		size_hint=(None,None), size=(800,800))
+		shape_analyzer_popup.open()
 		
 	def clear_all(self):
 		identification_elements = None
 		selected_image = None
 		selected_image_filename = None
-		
+		selected_image_shape_analyzer = None
+		print 'Cleared'
 
 class MainGUIApp(App):
 
 	def build(self):
+		self.title = 'Triton FPR'
 		return Interface()
 
 if __name__ == '__main__':

@@ -34,7 +34,6 @@ import lib.ui.main_gui as main_gui
 import lib.cli.main_cli as main_cli
 
 def initialize_fishbase():
-	global fishbase
 	fishbase = fish.FishDatabase()
 	#fish_a = ...
 	#fish_b = ...
@@ -42,7 +41,10 @@ def initialize_fishbase():
 	#fishbase.append_member(fish_b)
 	#TODO Add some fish
 	
-initialize_fishbase()
+	return fishbase
+	
+global fishbase
+fishbase = initialize_fishbase()	
 	
 	
 	

@@ -1,7 +1,7 @@
 class Fish:
 	"""Stores info for each fish"""
-	def __init__(self, name, bodycascade, fcscascades = [], cHL=None, cFL=None, cSL=None): #TODO Add stage/age
-		self.name = name; self.bodycascade = cascade
+	def __init__(self, name, bodycascade=None, fcascades = [], cHL=None, cFL=None, cSL=None): #TODO Add stage/age
+		self.name = name; self.bodycascade = bodycascade;
 		self.fcascades = fcascades
 		self.morphometrics = Morphometrics(cHL, cFL, cSL)
 		
@@ -11,7 +11,7 @@ class Fish:
 class Morphometrics(Fish):
 	"""Morphometrics are stored at this class"""
 	def __init__(self, cHL, cFL, cSL):
-		self.cHL, self.cFL, cSL =  cHL, cFL, cSL
+		self.cHL, self.cFL, self.cSL =  cHL, cFL, cSL
 		self.names =   {'Head Length' : self.cHL,
 						'Fork Length' : self.cFL,
 						'Standard Length': self.cSL}
@@ -56,9 +56,11 @@ class FishDatabase(Database):
 		#super(Database, self).__init__(name, user)
 	
 	def append_member(self, m):
+		"""Appends member to database"""
 		self.members.append(m)
 		
 	def get_members_as_string(self):
+		"""Returns a string containing all the members"""
 		s = []
 		for m in self.members:
 			s.append(str(m))

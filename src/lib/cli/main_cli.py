@@ -11,8 +11,6 @@ import identifier
 import lib.shape_analyzer as shape_analyzer
 
 #global vars
-global selected_image_filename
-
 
 class MainCLIApp:
 	
@@ -21,9 +19,8 @@ class MainCLIApp:
 		This project is released under the {add licensing} License
 		Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
 		print about_txt
-		
 	
-	def run(self):
+	def run(self):	
 		print 'Welcome to Triton FPR Project'
 		while 1 is 1:
 			print '1. Load an Image'
@@ -35,13 +32,14 @@ class MainCLIApp:
 				self.show_about()
 			else:
 				print 'Please enter a valid option'
-			selected_image_filename = raw_input('Select an image: ')
-			global selected_image; global chanelled_image 
+			
+		self.selected_image_filename = raw_input('Select an image: ')
+		 
 			
 		try:
-			Image.open(selected_image_filename)
-			selected_image = cv2.imread(selected_image_filename)
-			chanelled_image = cv2.imread(selected_image_filename,0)
+			Image.open(self.selected_image_filename)
+			self.selected_image = cv2.imread(self.selected_image_filename)
+			self.chanelled_image = cv2.imread(self.selected_image_filename,0)
 		except IOError:
 			raise Exception('Bad input')
 			exit()
@@ -50,38 +48,36 @@ class MainCLIApp:
 			print '1. Perform spieces identification'
 			print '2. Perform shape analysis'
 			if ans is 1:
-				global identification_elements
-				identification_elements = identifier.identify(selected_image, fishbase, detectCharacteristics=False)
-				def get_artifacts():
-					S = ''''''
-					for k in identification_elements.keys():
-						s = '{0}: {1}\n'.format(k, identification_elements[k])
-						S = S + s
-						del(s)
-					print S
-				get_artifacts()
-
-				def show_morphometrics():
-					for k in identification_elements.keys():
-						m = fish.Morphometrics().query(k, fishbase)
-						print m
-						
-				show_morphometrics()
+				self.identification_elements = identifier.identify(self.selected_image, fishbase, detectCharacteristics=False)
+				#get artifacts
+				S = ''''''
+				for k in self.identification_elements.keys():
+					s = '{0}: {1}\n'.format(k, self.identification_elements[k])
+					S = S + s
+					del(s)
+				print S
+				# show_morphometrics():
+				for k in identification_elements.keys():
+					m = fish.Morphometrics().query(k, fishbase)
+					print m
+					
 				break
 			
 			elif ans is 2:
-				global selected_image_shape_analyzer
-				selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image)
-				selected_image_shape_analyzer.print_details()
-				selected_image_shape_analyzer.draw_extreme_points_lines()
-				selected_image_shape_analyzer.draw_details()
+				#global selected_image_shape_analyzer
+				self.selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image)
+				self.selected_image_shape_analyzer.print_details()
+				self.selected_image_shape_analyzer.draw_extreme_points_lines()
+				self.selected_image_shape_analyzer.draw_details()
 				_out = raw_input('Select an output folder: ')
-				selected_image_shape_analyzer.write_steps(_out) #add more
+				self.selected_image_shape_analyzer.write_steps(_out) #add more
 				break				
 			else:
 				print 'Please enter a valid option'
 			
 if __name__ == '__main__':
 	sys.path.append('../..')
-	from base import *
+	import base; global fishbase
+	fishbase = base.initialize_fishbase()
+	
 	MainCLIApp().run()

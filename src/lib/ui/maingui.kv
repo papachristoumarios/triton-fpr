@@ -97,6 +97,29 @@
 			text: 'Close'
 			on_press: root.close()
 			
-
-
-	
+<ShapeAnalyzerInterface>:
+	BoxLayout:
+		orientation: 'horizontal'
+		Image:
+			id: shape_analyzed_image
+			source: '/tmp/final_image.jpg'
+			size: self.width, self.height
+		BoxLayout:
+			orientation: 'vertical'
+			padding: 2*[30,40]
+			spacing: 15
+			Button:
+				text: 'Refresh'
+				on_press: root.refresh()
+			Button:
+				text: 'Save details as text'
+				on_press: pass
+			Button:
+				text: "Draw extreme points' lines"
+				on_press: root.draw_el()
+			Button:
+				text: "Draw morphometrics' lines"
+				on_press: root.draw_ml()
+			Button:
+				text: 'Close'
+				on_press: root.close()
