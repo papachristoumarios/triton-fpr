@@ -156,8 +156,10 @@ class ShapeAnalyzer:
 		cv2.line(self.th2d,tuple(self.topmost)[::-1],(self.topmost[1], int(self.topmost[0] + self.HL)),(200,0,0),thickness)
 		cv2.line(self.th2d,tuple(self.bottommost)[::-1], (self.bottommost[1], int(self.bottommost[0] - self.FL)), (200,0,0),thickness)
 
-	def export_details(self): #TODO CSV for PostgreSQL 
+	def export_details_to_CSV(self): #TODO CSV for PostgreSQL 
 		pass
+		
+		
 			
 if __name__ == '__main__':
 	img = cv2.imread('/home/marios/1.jpg',0)

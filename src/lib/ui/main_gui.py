@@ -15,7 +15,6 @@ import lib.shape_analyzer as shape_analyzer
 #global vars
 global selected_image_filename
 
-
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
 	def load(self):
@@ -98,7 +97,7 @@ class Interface(BoxLayout):
 	
 	def get_banner(self):
 		return '../../../res/logo/bitmap/banner_90dpi.png'
-
+		
 	def foo(self):
 		print 'foo'
 		

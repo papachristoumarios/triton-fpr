@@ -33,10 +33,5 @@ class ComplexIdentification:
 			
 #TODO Add main method for tests
 
-if __name__ == '__main__':
-	import fish,detector
-	import sys
-	pass
-
 
 

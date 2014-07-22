@@ -65,6 +65,3 @@ class FishDatabase(Database):
 		for m in self.members:
 			s.append(str(m))
 		return s
-		
-		
-
