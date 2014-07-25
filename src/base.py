@@ -4,9 +4,9 @@
 #Built-in
 import os
 import sys
-import platform
 from math import sqrt
 import Image
+import psycopg2
 
 #Numpy
 import numpy as np
@@ -34,18 +34,41 @@ import lib.ui.main_gui as main_gui
 import lib.cli.main_cli as main_cli
 
 def initialize_fishbase():
-	fishbase = fish.FishDatabase()
-	#fish_a = ...
-	#fish_b = ...
-	#fishbase.append_member(fish_a)
-	#fishbase.append_member(fish_b)
-	#TODO Add some fish
-	
+	"""Populates database"""
+	try:
+		fishbase = fish.FishDatabase('dbname=fishbase user=postgres host=localhost password=1997') 
+		print 'Connection Established'
+	except psycopg2.OperationalError:
+		exit() #do sth
+		
+	for specimen in fishbase.species_list:
+		code = specimen[0]
+		name = specimen[1]	
+		f = fish.Fish()
+		f.code = code
+		f.name = name
+		f.bodycascade = fishbase.query_cascade(code,'BC')
+		f.fcascades = fishbase.query_feature_cascades(code)
+		f.morphometrics.cHL = fishbase.query_morphometrics(code, 'HL')
+		f.morphometrics.cFL = fishbase.query_morphometrics(code, 'FL')
+		f.morphometrics.cSL = fishbase.query_morphometrics(code, 'SL')
+		#print code, name
+		fishbase.append_member(f)	
+
+	print 'Elements were sucessfully populated'
 	return fishbase
 	
-global fishbase
+def get_temp_dir():
+	import platform
+	p = platform.system()
+	if 'Linux' in p:
+		return '/tmp'
+	elif 'Windows' in p:
+		return 'C:\Temp'
+	else:
+		return '/'
+			
+#globals	
+global fishbase, TEMP_DIR;
 fishbase = initialize_fishbase()	
-	
-	
-	
-	
+TEMP_DIR = get_temp_dir()

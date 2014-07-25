@@ -1,6 +1,3 @@
-#sys.path.append('scripts/')
-
-
 #scripts.detect.detect2 returns:
 # elements[4] [0]: image, [1]: NOF, [2]: true if found, [3]:coordinates
 

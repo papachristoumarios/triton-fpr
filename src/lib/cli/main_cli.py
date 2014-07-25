@@ -7,7 +7,7 @@ import Image,cv2,sys,platform; import numpy as np
 #parent imports
 sys.path.append('../..')
 import lib.fish as fish
-import identifier
+import scripts.identifier
 import lib.shape_analyzer as shape_analyzer
 
 #global vars

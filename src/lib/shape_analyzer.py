@@ -4,6 +4,24 @@
 import cv2,sys,math
 import numpy as np
 
+def mean(M):
+	return sum(M)/len(M)
+
+def standard_deviation(M,squared=False):
+	sums = 0
+	x_dash = mean(M)
+	for t in M:
+		sums += (t - x_dash)**2
+		
+def coefficients_of_variation(M):
+	return abs(standard_deviation(M) / mean(M))
+	
+	s2 = sums / len(M)
+	if squared:
+		return s2
+	else:
+		return math.sqrt(s2)
+		
 def get_angle(u,v, asCosine = False,degrees = False):
 	"""Returns the angle of two vectors"""
 	cosine = u.dot(v)/(np.linalg.norm(v)*np.linalg.norm(u))
@@ -35,7 +53,7 @@ def rectangular_crop(points, ry, rx):
 class ShapeAnalyzer:
 	"""Developed for image shape analysis"""
 
-	def __init__(self, image):
+	def __init__(self, image, threshold1=0,threshold2=255):
 		"""ShapeAnalyzer Class Constructor. It generates results by performing:
 		1. a Gaussian Blur filter
 		2. Otsu's Threshold and Binary Threshold
@@ -50,7 +68,7 @@ class ShapeAnalyzer:
 		self.image = image
 		# Otsu's thresholding after Gaussian filtering
 		self.blur = cv2.GaussianBlur(self.image,(5,5),0)
-		self.ret,self.th = cv2.threshold(self.blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+		self.ret,self.th = cv2.threshold(self.blur,threshold1,threshold2,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	
 		#Canny Edge Detection and second threshold
 		self.canny_edges = cv2.Canny(self.th, 0, 255)
@@ -90,13 +108,18 @@ class ShapeAnalyzer:
 		self.d = - (np.array(self.rightmost) - np.array(self.bottommost))
 	
 		#area of polygon defined by the vectors a,b,c,d
-		self.area = 0.5 * (np.linalg.norm(np.cross(self.a,self.b)) + np.linalg.norm(np.cross(self.c,self.d)))
+
 	
 		#Length in x and y directions
 		self.ly = abs(self.v.dot([1,0]))
 		self.lx = abs(self.u.dot([0,1]))
 		
 		self.__details = ['Height: '+ str(self.h), 'Width: ' + str(self.w), 'Total Length (X): ' + str(self.lx), 'Total Length (Y): ' + str(self.ly)]
+			
+		self.area = 0.5 * (np.linalg.norm(np.cross(self.a,self.b)) + np.linalg.norm(np.cross(self.c,self.d)))
+		self.rhombus_area = 0.5*(self.lx*self.ly)
+		self.mean_area = mean([self.area, self.rhombus_area])
+		self.area_standard_deviation = standard_deviation([self.area, self.rhombus_area])	
 			
 	def print_details(self):
 		"""Print shape analysis results"""
@@ -159,8 +182,7 @@ class ShapeAnalyzer:
 	def export_details_to_CSV(self): #TODO CSV for PostgreSQL 
 		pass
 		
-		
-			
+				
 if __name__ == '__main__':
 	img = cv2.imread('/home/marios/1.jpg',0)
 	from fish import Fish
@@ -170,4 +192,9 @@ if __name__ == '__main__':
 	s.draw_extreme_points_lines()
 	s.draw_details()
 	s.draw_morphometric_lines_according_to_specimen(f1)
-	s.write_final_image('/home/marios')
+	s.draw_morphometric_lines_according_to_specimen(f1)
+	#s.write_steps('/home/marios/Dropbox')
+	print s.area
+	print s.rhombus_area
+	print s.mean_area
+	print s.area_standard_deviation

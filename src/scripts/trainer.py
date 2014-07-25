@@ -1,104 +1,90 @@
-import os,platform
-from objectmarker import *
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+import os,sys,platform
+import psycopg2 as db
 
 
-def negatives_preparation(_dir):
-	filelist = os.listdir(_dir)
-	with open(_dir + 'negatives.txt', 'w') as f:
-		for s in filelist:
-			f.write(_dir + s)
+class Trainer:
+	
+	def __init__(self):
+		self.cs_cmd = 'opencv_createsamples'
+		self.ht_cmd = 'opencv_traincascade' #opencv_traincascade
+		if platform.system() is 'Windows':
+			self.cs_cmd += '.exe'
+			self.ht_cmd += '.exe'
+	
+	def tcreate_samples(self,input_filename, output_filename, number, width, height):
+		"""Create PS via opencv_createsamples
+			E.g.: opencv_createsamples -info marked_positives.info -vec data/positives.vec -num 1000 -w 20 -h 20
+			Where:
+			i. -num: The number of samples
+			ii. -w, -h: The min dimensions of the object"""
 		
-def vector_file_creation(output_filename,positives_dir ,number, width, height):
-	if platform.system() is 'Linux':
-		cmd = 'opencv_createsamples'
-	else:
-		cmd = 'opencv_createsamples.exe'
+		os.system('{0} -info {1} -vec {2} -num {3} -w {4} -h {5}'.format(self.cs_cmd, input_filename, output_filename, number, width, height))
+		return 1
 		
-	cmd = '{0} -info {1}/positives.txt -vec {2} -num {3} -w {4} -h {5}'.format(cmd, positives_dir, output_filename, number, width, height)
-	os.system(cmd)
+	def thaar_training(self, output_dir, vec_filename, bg_filename, npos, nneg, nstage, malloc, mode, width, height, featureType):
+		"""5. Do a Haar Training 
+		opencv_haartraining -data data/cascade.xml -vec data/positives.vec -bg 
+		negatives/negatives.info -npos 2890 -nneg 2977 -nstage 20 -mem 1000 -mode ALL -w 20 -h 20"""
 		
-def haar_training(output_filename, vec_dir, negatives_dir, number_of_positives, number_of_negatives, number_of_stages, malloc, mode, width, height):
-	if platform.system() is 'Linux':
-		cmd = 'opencv_haartraining'
-	else:
-		cmd = 'opencv_haartraining.exe'
-	
-	cmd = '{0} -data {1} -vec {2} -bg {3} -npos {4} -nneg {5} -nstage {6} -mem {7} -mode {8} -w {9} -h {10}'.format(output_filename, vec_dir, negatives_dir, number_of_positives, number_of_negatives, number_of_stages, malloc, mode, width, height)	
-	os.system(cmd)
+		os.system('{0} -data {1} -vec {2} -bg {3} -npos {4} -nneg{5} -nstage {6} -mem {7} -mode {8} -w {9} -h {10} -featureType {11}'.format(self.ht_cmd, output_dir, vec_filename, bg_filename, npos, nneg, nstage, malloc, mode, width, height, featureType))
+		
+		return 1	
+		
 
-class TrainerAppCLI:
-
-	def run(self):
-		print '''This is the trainer script for fish pattern recognition. It generates .xml cascade files
-		Steps:
-		1. Negatives Preparation
-		2. Positives Preparation & Object Marking
-		3. Vector file creation
-		4. Haar Training \n \n 
-		'''
-		#STEP 1
-		print 'STEP 1: Negatives Preparation'
-		_pdir = raw_input('Enter the directory of the negative files: ')
-		if not(_ndir.endswith('/')):
-			_ndir += '/'
-		negatives_preparation(_ndir)
-		print 'Done'
-		#STEP 2
-		print 'STEP 2: Positives Preparation & Object Marking'
-		_pdir = raw_input('Enter the directory of the positive files: ')
-		_ext = raw_input('Enter image extension (with dot): ')
-		if not(_pdir.endswith('/')):
-			_pdir += '/'
-		table_file_name      = 'positives.txt'
-		background_file_name = 'dump.txt'
-		image_file_glob      = _pdir + '*' + _ext
-		read_rect_table()
-		object_detection()
-		print 'Done'
-		#STEP 3 
-		vec_filename = raw_input('Enter the output filename of the .vec file: ')
-		number = raw_input('Enter the number of samples: ')
-		width = raw_input('Enter minimum width: ')
-		height = raw_input('Enter minimum height: ')
-		vector_file_creation(vec_filename, _pdir, number, width, height)
-		print 'Done'
-		#STEP 4
-		output_filename = raw_input('Enter the output filename of the cascade .xml file: ')
-		M = raw_input('Enter the number of positives, then the number of negatives and the number of stages separated by a comma: ')
-		number_of_positives, number_of_negatives, number_of_stages = M.split(',')
-		malloc = raw_input('How much memory would you like to allocate for the process?: ')
-		haar_training(output_filename, vec_filename, _ndir, number_of_positives, number_of_negatives, number_of_stages, malloc, width, height)
-		print 'Done'
-
-
-class Interface:
-	pass
+class Interface(BoxLayout):
 	
-class HaarDialog:
-	pass 
-	
-class ObjMarkingDialog:
-	pass
-	
-class NegativesDialog:
-	pass 
-	
-	
-	
-class TrainerAppGUI(App):
+	def connect(self):
+		global conn, cursor,trainer
+		trainer = Trainer()
+		_durl = str(self.ids['datasource_input'].text)
+		try:
+			conn = db.connect(_durl)
+			self.ids['status'].text = 'Status: Connected'
+			cursor = conn.cursor()
+		except db.OperationalError:
+			self.ids['status'].text = 'Status: Error'
+			
+	def create_samples(self):
+		while True:
+			try:
+				cursor.execute('SELECT * FROM "OPENCV_CREATE_SAMPLES"')
+				data = cursor.fetchall()
+				break
+			except db.InternalError:
+				conn.rollback()
+				continue
+		for e in data:
+			trainer.tcreate_samples(e[3], e[2], e[4], e[5], e[6])
+			
+		self.ids['status'].text = 'Status: Samples Created' 	
+		return 1
+			
+	def haar_training(self):
+		while True:
+			try:
+				cursor.execute('SELECT * FROM "OPENCV_HAARTRAINING_TABLE"')
+				data = cursor.fetchall()
+				break
+			except db.InternalError:
+				conn.rollback()
+				continue		
+			
+		for e in data:
+			trainer.thaar_training(e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9], e[11], e[12], e[10])
+		
+		self.ids['status'].text = 'Status: Training Finished' 	
+		return 1
+		
+class TrainerGUIApp(App):
 	
 	def build(self):
+		self.title = 'PostgreSQL Integrated Trainer for Haar Training'
 		return Interface()
 		
 		
-	
-		
-		
+
+
 if __name__ == '__main__':
-	ans = raw_input('Use a graphical user interface? [y/n] :')
-	if ans is 'n':
-		TrainerAppCLI().run()
-	else:
-		#kivy imports 
-	
-	
+	TrainerGUIApp().run()

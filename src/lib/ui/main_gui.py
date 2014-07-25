@@ -9,11 +9,14 @@ from kivy.uix.popup import Popup
 #parent imports
 sys.path.append('../..')
 import lib.fish as fish
-import identifier
+import scripts.identifier
 import lib.shape_analyzer as shape_analyzer
 
 #global vars
 global selected_image_filename
+
+class SlidersLayout(BoxLayout):
+	pass 
 
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
@@ -128,12 +131,14 @@ class Interface(BoxLayout):
 		
 	def perform_shape_analysis(self):
 		global selected_image_shape_analyzer
-		selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image)
+		_threshold1 = int(self.ids['sl1'].value)
+		_threshold2 = int(self.ids['sl2'].value)
+		selected_image_shape_analyzer = shape_analyzer.ShapeAnalyzer(chanelled_image,threshold1=_threshold1, threshold2=_threshold2)
 		selected_image_shape_analyzer.write_final_image('/tmp')
 		global shape_analyzer_popup
 		shape_analyzer_popup = Popup(title= 'Shape Analyzer',
 		content = ShapeAnalyzerInterface(),
-		size_hint=(None,None), size=(800,800))
+		size_hint=(None,None), size=(700,700))
 		shape_analyzer_popup.open()
 		
 	def clear_all(self):
@@ -152,5 +157,4 @@ class MainGUIApp(App):
 if __name__ == '__main__':
 	#general imports
 	sys.path.append('../..')
-	from base import *
 	MainGUIApp().run()

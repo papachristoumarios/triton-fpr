@@ -18,6 +18,31 @@
 			Button:
 				text: 'Clear All'
 				on_press: root.clear_all()
+		
+		BoxLayout:
+			orientation: 'horizontal'
+			Label:
+				text: 'Threshold 1'
+			Slider:
+				id: sl1
+				range: (0,255)
+				value: 0
+				step: 1
+			Label:
+				text: str(sl1.value)
+		BoxLayout:
+			orientation: 'horizontal'
+			Label:
+				text: 'Threshold 2'
+			Slider:
+				id: sl2
+				range: (0,255)
+				value: 255
+				step: 1
+			Label:
+				text: str(sl2.value)
+		
+		
 		BoxLayout:
 			orientation: 'horizontal'
 			Button:
