@@ -23,7 +23,7 @@ class Morphometrics(Fish):
 			return None
 		S = ''''''
 		for k in self.names.keys():
-			s = '{0} Coefficient: {1}% TL \n'.format(k, 100*self.names[k])
+			s = '{0} Coefficient: {1}/100 of TL \n'.format(k, 100*self.names[k])
 			S = S + s
 		return S
 			
@@ -123,3 +123,26 @@ class FishDatabase(Database):
 					return m.name
 				return m
 		return None
+
+	#open image in 0 mode
+	def identify(self,img, draw=False, detectCharacteristics=False):
+		import cv2; timg = img.copy()
+		for m in self.members:
+			cascade = cv2.CascadeClassifier(m.bodycascade)
+			features = cascade.detectMultiScale(img)
+			if len(features) is not 0:
+				print m.code, m.name, 'found'
+				if draw:
+					for (x,y,w,h) in features:
+						timg = cv2.rectangle(timg, (x,y), (x+w,y+h), (255,0,0), 2)
+						if detectCharacteristics:
+							roi = timg[y:y+h, x:x+w]
+							for f in m.fcascades:
+								_cascade = cv2.CascadeClassifier(f)
+								_features = f.detectMultiScale(roi)
+								for (fx,fy,fw,fh) in _features:
+									cv2.rectangle(roi, (fx,fy), (fx+fw, fy+fh), (255,0,0), 2)
+				return m
+		return None
+		
+		

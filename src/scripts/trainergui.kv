@@ -1,0 +1,34 @@
+<Interface>:
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 2*[30,40]
+		spacing: 15
+		
+		BoxLayout:
+			Label:
+				text: 'Datasource URL'
+			TextInput:
+				id: datasource_input
+				text: 'dbname=fishbase host=localhost user=postgres'
+		Button:
+			id: connect_btn
+			text: 'Connect'
+			on_press: root.connect()
+		Button:
+			id: cs_btn
+			text: 'Create samples'
+			on_press: root.create_samples()
+		Button:
+			id: ht_btn
+			on_press: root.haar_training()
+			text: 'Train Cascade'
+		Button:
+			text: 'Exit'
+			on_press: exit()
+		Label:
+			text: 'Status: Disconnected'
+			italic: True
+			id: status
+		
+			
+		

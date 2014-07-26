@@ -26,8 +26,6 @@ import lib.fish as fish
 import lib.manipulator as manipulator
 import lib.shape_analyzer as shape_analyzer
 #scripts package
-import scripts.detector as detector
-import scripts.identifier as identifier
 #gui
 import lib.ui.main_gui as main_gui
 #cli
@@ -67,8 +65,3 @@ def get_temp_dir():
 		return 'C:\Temp'
 	else:
 		return '/'
-			
-#globals	
-global fishbase, TEMP_DIR;
-fishbase = initialize_fishbase()	
-TEMP_DIR = get_temp_dir()

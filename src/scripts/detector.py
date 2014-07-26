@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #scripts.detector
+#OBSOLETE: Used only for tests or as an assistant script for quick tests
 
 import sys
 import cv,cv2
@@ -42,7 +43,5 @@ if __name__ == "__main__":
 		cv2.imshow(title, img)
 		print title
 		for e in elements[3]:
-			print str(e)
-			
-			
+			print str(e)	
 		cv2.waitKey()

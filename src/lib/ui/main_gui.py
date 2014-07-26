@@ -1,5 +1,5 @@
 #general imports
-import Image,cv2,sys,platform; import numpy as np
+import Image,cv2,sys; import numpy as np
 
 #kivy imports
 from kivy.app import App
@@ -8,15 +8,10 @@ from kivy.uix.popup import Popup
 
 #parent imports
 sys.path.append('../..')
-import lib.fish as fish
-import scripts.identifier
 import lib.shape_analyzer as shape_analyzer
 
 #global vars
 global selected_image_filename
-
-class SlidersLayout(BoxLayout):
-	pass 
 
 class LoadDialog(BoxLayout):
 	"""Load dialog"""
@@ -61,17 +56,10 @@ Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
 class IdentifierInterface(BoxLayout):
 	
 	def get_artifacts(self):
-		S = ''''''
-		for k in identification_elements.keys():
-			s = '{0}: {1}\n'.format(k, identification_elements[k])
-			S = S + s
-		del(s)
-		return S
+		return 'Species: {0} HCMR Code: {1}'.format(identified_specimen.name, identified_specimen.code)
 		
 	def show_morphometrics(self):
-		for k in identification_elements.keys():
-			m = fish.Morphometrics().query(k, fishbase)
-			self.ids['output_label'].text += m
+		return str(identified_specimen.morphometrics)
 			
 class ShapeAnalyzerInterface(BoxLayout):
 	
@@ -87,10 +75,7 @@ class ShapeAnalyzerInterface(BoxLayout):
 		self.refresh()
 		
 	def draw_ml(self):
-		#EXAMPLE! CAUTION DO NOT USE
-		
-		f1 = fish.Fish('f1',cHL = 0.25, cFL = 0.3, cSL = 0.1)
-		selected_image_shape_analyzer.draw_morphometric_lines_according_to_specimen(f1)
+		selected_image_shape_analyzer.draw_morphometric_lines_according_to_specimen(identified_specimen)
 		selected_image_shape_analyzer.write_final_image('/tmp')
 		#EOE
 		self.refresh()
@@ -98,12 +83,9 @@ class ShapeAnalyzerInterface(BoxLayout):
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
 	
-	def get_banner(self):
+	def get_banner(self): #TODO FIX
 		return '../../../res/logo/bitmap/banner_90dpi.png'
-		
-	def foo(self):
-		print 'foo'
-		
+				
 	def show_load(self):
 		global load_popup
 		load_popup = Popup(title='Load an Image',
@@ -126,8 +108,8 @@ class Interface(BoxLayout):
 		about_dialog_popup.open()
 		
 	def perform_identification(self):
-		global identification_elements
-		identification_elements = identifier.identify(selected_image, fishbase, detectCharacteristics=False)
+		global identified_specimen
+		identified_specimen = fishbase.identify(chanelled_image)
 		
 	def perform_shape_analysis(self):
 		global selected_image_shape_analyzer
@@ -142,7 +124,7 @@ class Interface(BoxLayout):
 		shape_analyzer_popup.open()
 		
 	def clear_all(self):
-		identification_elements = None
+		identified_specimen = None
 		selected_image = None
 		selected_image_filename = None
 		selected_image_shape_analyzer = None
@@ -157,4 +139,7 @@ class MainGUIApp(App):
 if __name__ == '__main__':
 	#general imports
 	sys.path.append('../..')
+	import base
+	global fishbase
+	fishbase = base.initialize_fishbase()
 	MainGUIApp().run()
