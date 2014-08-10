@@ -1,17 +1,16 @@
 #!/usr/bin/python
+"""Main Application"""
 
 from base import *
 
-COMMAND_LINE_APP = False
-BANNER = '../res/logo/bitmap/banner_90dpi.png'
-
 if __name__ == '__main__':
-	#if sys.argv[1] is '--cli':
-	#	COMMAND_LINE_APP = True
+	#configurations
+	conf_parser = config_parser.ConfigParser('config.spec',regex=':')
 	global fishbase
-	fishbase = initialize_fishbase()
-	TEMP_DIR = get_temp_dir()
-	if COMMAND_LINE_APP is False:
-		main_gui.MainGUIApp().run()
-	else:
-		main_cli.MainCLIApp().run()
+	fishbase = initialize_fishbase(conf_parser.get('DATASOURCE_URL'))
+	banner = '../res/logo/bitmap/banner_90dpi.png'
+	
+	#run
+	main_gui_app = main_gui.MainGUIApp()
+	main_gui_app._setup(fishbase, banner, get_temp_dir())
+	main_gui_app.run()

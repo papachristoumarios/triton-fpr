@@ -1,7 +1,10 @@
+#!/usr/bin/env python2.7
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 import os,sys,platform
 import psycopg2 as db
+import mergevec
 
 
 class Trainer:
@@ -23,16 +26,13 @@ class Trainer:
 		os.system('{0} -info {1} -vec {2} -num {3} -w {4} -h {5}'.format(self.cs_cmd, input_filename, output_filename, number, width, height))
 		return 1
 		
-	def thaar_training(self, output_dir, vec_filename, bg_filename, npos, nneg, nstage, malloc, mode, width, height, featureType):
-		"""5. Do a Haar Training 
+	def thaar_training(self, output_dir, vec_filename, npos, nneg, nstage, malloc, mode, width, height, featureType, bg_filename):
+		"""Do a Haar Training 
 		opencv_haartraining -data data/cascade.xml -vec data/positives.vec -bg 
 		negatives/negatives.info -npos 2890 -nneg 2977 -nstage 20 -mem 1000 -mode ALL -w 20 -h 20"""
-		
 		os.system('{0} -data {1} -vec {2} -bg {3} -npos {4} -nneg{5} -nstage {6} -mem {7} -mode {8} -w {9} -h {10} -featureType {11}'.format(self.ht_cmd, output_dir, vec_filename, bg_filename, npos, nneg, nstage, malloc, mode, width, height, featureType))
-		
 		return 1	
 		
-
 class Interface(BoxLayout):
 	
 	def connect(self):
@@ -78,7 +78,7 @@ class Interface(BoxLayout):
 		return 1
 		
 class TrainerGUIApp(App):
-	
+	"""Trainer app using kivy frontend"""
 	def build(self):
 		self.title = 'PostgreSQL Integrated Trainer for Haar Training'
 		return Interface()

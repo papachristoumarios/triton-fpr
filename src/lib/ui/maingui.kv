@@ -30,8 +30,6 @@
 				step: 1
 			Label:
 				text: str(sl1.value)
-		BoxLayout:
-			orientation: 'horizontal'
 			Label:
 				text: 'Threshold 2'
 			Slider:
@@ -47,7 +45,7 @@
 			orientation: 'horizontal'
 			Button:
 				text: 'Perform Spieces Identification'
-				on_press: root.perform_identification()
+				on_press: root.perform_identification2()
 			Button:
 				text: 'Perform Shape Analysis'
 				on_release: root.perform_shape_analysis()
@@ -64,8 +62,10 @@
 	BoxLayout:
 		orientation: 'vertical'
 		padding: 2*[30,40]
-		TextInput:
-			id: load_text_input
+		FileChooserListView:
+			id: load_filechooser
+			multiselect: False
+			path: root.get_home()
 		BoxLayout:
 			orientation: 'horizontal'
 			spacing: 15
@@ -84,13 +84,6 @@
 		orientation: 'vertical'
 		padding: 2*[30,40]
 		spacing: 15
-		Image:
-			source: selected_image_filename
-		Label:
-			text: 'Fish Name'
-			size: 18
-		Label:
-			text: 'Identification Output'
 		Label:
 			id: output_label
 			text: root.get_artifacts()
@@ -104,7 +97,7 @@
 		Button:
 			id: close_button
 			text: 'Close'
-			on_press: identifier_interface_popup.dismiss()
+			on_press: root.close()
 			
 <AboutDialog>
 	BoxLayout:
@@ -133,9 +126,6 @@
 			orientation: 'vertical'
 			padding: 2*[30,40]
 			spacing: 15
-			Button:
-				text: 'Refresh'
-				on_press: root.refresh()
 			Button:
 				text: 'Save details as text'
 				on_press: pass

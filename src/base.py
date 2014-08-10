@@ -1,5 +1,5 @@
-#BASE FILE
-#General Imports needed for main.py to function properly
+"""BASE FILE
+General Imports needed for main.py in order to function properly"""
 
 #Built-in
 import os
@@ -25,19 +25,17 @@ from kivy.uix.popup import Popup
 import lib.fish as fish
 import lib.manipulator as manipulator
 import lib.shape_analyzer as shape_analyzer
-#scripts package
+import lib.config_parser as config_parser
 #gui
 import lib.ui.main_gui as main_gui
-#cli
-import lib.cli.main_cli as main_cli
 
-def initialize_fishbase():
-	"""Populates database"""
+def initialize_fishbase(datasource_url):
+	"""Populates database and returns a FishDatabase object"""
 	try:
-		fishbase = fish.FishDatabase('dbname=fishbase user=postgres host=localhost password=1997') 
+		fishbase = fish.FishDatabase(datasource_url) 
 		print 'Connection Established'
 	except psycopg2.OperationalError:
-		exit() #do sth
+		exit() 
 		
 	for specimen in fishbase.species_list:
 		code = specimen[0]
@@ -50,13 +48,22 @@ def initialize_fishbase():
 		f.morphometrics.cHL = fishbase.query_morphometrics(code, 'HL')
 		f.morphometrics.cFL = fishbase.query_morphometrics(code, 'FL')
 		f.morphometrics.cSL = fishbase.query_morphometrics(code, 'SL')
-		#print code, name
+		f.morphometrics.cBD = fishbase.query_morphometrics(code, 'BD')
+		f.morphometrics.cPaL = fishbase.query_morphometrics(code, 'PaL')
+		f.morphometrics.cPdL = fishbase.query_morphometrics(code, 'PdL')
+		f.morphometrics.cPpL = fishbase.query_morphometrics(code, 'PpL')
+		f.morphometrics.cPpeL = fishbase.query_morphometrics(code, 'PpeL')
+		f.morphometrics.cED = fishbase.query_morphometrics(code, 'ED')
+		f.morphometrics.cPoL = fishbase.query_morphometrics(code, 'PoL')
+		f.morphometrics.cPcL = fishbase.query_morphometrics(code, 'PcL')
+		f.images_dir = fishbase.query_images_dir(code)
 		fishbase.append_member(f)	
 
 	print 'Elements were sucessfully populated'
 	return fishbase
 	
 def get_temp_dir():
+	"""Returns the temp directory (/tmp under Linux, C:\Temp under win)"""
 	import platform
 	p = platform.system()
 	if 'Linux' in p:

@@ -30,6 +30,7 @@ def detect2(image, cascade):
 	else:
 		elems = [0,0,False,0]
 	return elems
+	
 
 if __name__ == "__main__":
 	if len(sys.argv) is not 3:
