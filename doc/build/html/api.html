@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Application Programming Interface &mdash; Triton FPR v0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'v0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Triton FPR v0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Triton FPR’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Triton FPR’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Triton FPR v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="application-programming-interface">
+<h1>Application Programming Interface<a class="headerlink" href="#application-programming-interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-lib.shape_analyzer">
+<span id="shape-analyzer"></span><h2>Shape Analyzer<a class="headerlink" href="#module-lib.shape_analyzer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lib.shape_analyzer.ShapeAnalyzer">
+<em class="property">class </em><tt class="descclassname">lib.shape_analyzer.</tt><tt class="descname">ShapeAnalyzer</tt><big>(</big><em>image</em>, <em>threshold1=0</em>, <em>threshold2=255</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Developed for image shape analysis</p>
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.calculate_morphometrics_according_to_specimen">
+<tt class="descname">calculate_morphometrics_according_to_specimen</tt><big>(</big><em>fish</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.calculate_morphometrics_according_to_specimen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.calculate_morphometrics_according_to_specimen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates morphometrics according to specimen</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.display_steps">
+<tt class="descname">display_steps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.display_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.display_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the shape analysis steps</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.draw_details">
+<tt class="descname">draw_details</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.draw_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.draw_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the details on the image</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.draw_extreme_points_lines">
+<tt class="descname">draw_extreme_points_lines</tt><big>(</big><em>thickness=1</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.draw_extreme_points_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.draw_extreme_points_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws lines that join the extreme points together</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.draw_morphometric_lines_according_to_specimen">
+<tt class="descname">draw_morphometric_lines_according_to_specimen</tt><big>(</big><em>fish</em>, <em>thickness=2</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.draw_morphometric_lines_according_to_specimen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.draw_morphometric_lines_according_to_specimen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws morphometrics as lines according to defined specimen</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.print_details">
+<tt class="descname">print_details</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.print_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.print_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print shape analysis results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.write_final_image">
+<tt class="descname">write_final_image</tt><big>(</big><em>_dir</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.write_final_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.write_final_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes final image to storage</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.shape_analyzer.ShapeAnalyzer.write_steps">
+<tt class="descname">write_steps</tt><big>(</big><em>_dir</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#ShapeAnalyzer.write_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.ShapeAnalyzer.write_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports steps to a directory</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.shape_analyzer.display_multiple_images">
+<tt class="descclassname">lib.shape_analyzer.</tt><tt class="descname">display_multiple_images</tt><big>(</big><em>images</em>, <em>title</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#display_multiple_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.display_multiple_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display multiple images via the numpy hstack() function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.shape_analyzer.get_angle">
+<tt class="descclassname">lib.shape_analyzer.</tt><tt class="descname">get_angle</tt><big>(</big><em>u</em>, <em>v</em>, <em>asCosine=False</em>, <em>degrees=False</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#get_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.get_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the angle of two vectors</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.shape_analyzer.rectangular_crop">
+<tt class="descclassname">lib.shape_analyzer.</tt><tt class="descname">rectangular_crop</tt><big>(</big><em>points</em>, <em>ry</em>, <em>rx</em><big>)</big><a class="reference internal" href="_modules/lib/shape_analyzer.html#rectangular_crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.shape_analyzer.rectangular_crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a rectangular crop to points of the type (y,x)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib.ui.main_gui">
+<span id="gui-app"></span><h2>GUI App<a class="headerlink" href="#module-lib.ui.main_gui" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lib.ui.main_gui.Interface">
+<em class="property">class </em><tt class="descclassname">lib.ui.main_gui.</tt><tt class="descname">Interface</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/lib/ui/main_gui.html#Interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.ui.main_gui.Interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that handles the main interface</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="lib.ui.main_gui.LoadDialog">
+<em class="property">class </em><tt class="descclassname">lib.ui.main_gui.</tt><tt class="descname">LoadDialog</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/lib/ui/main_gui.html#LoadDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.ui.main_gui.LoadDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load dialog</p>
+<dl class="method">
+<dt id="lib.ui.main_gui.LoadDialog.cancel">
+<tt class="descname">cancel</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/ui/main_gui.html#LoadDialog.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.ui.main_gui.LoadDialog.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dismisses the popup</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.ui.main_gui.LoadDialog.load">
+<tt class="descname">load</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/ui/main_gui.html#LoadDialog.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.ui.main_gui.LoadDialog.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads defined image</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fish-database-handler">
+<h2>Fish Database Handler<a class="headerlink" href="#fish-database-handler" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-lib.fish"></span></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Application Programming Interface</a><ul>
+<li><a class="reference internal" href="#module-lib.shape_analyzer">Shape Analyzer</a></li>
+<li><a class="reference internal" href="#module-lib.ui.main_gui">GUI App</a></li>
+<li><a class="reference internal" href="#fish-database-handler">Fish Database Handler</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Triton FPR&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Triton FPR’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Triton FPR v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Marios Papachristou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

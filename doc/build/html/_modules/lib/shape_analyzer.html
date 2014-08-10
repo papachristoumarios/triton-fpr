@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lib.shape_analyzer &mdash; Triton FPR v0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'v0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Triton FPR v0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Triton FPR v0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for lib.shape_analyzer</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python</span>
+
+<span class="c">#POINTS are of the type (y,x)</span>
+<span class="kn">import</span> <span class="nn">cv2</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">standard_deviation</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">squared</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+	<span class="n">sums</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">x_dash</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">M</span><span class="p">:</span>
+		<span class="n">sums</span> <span class="o">+=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">x_dash</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+		
+<span class="k">def</span> <span class="nf">coefficients_of_variation</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">standard_deviation</span><span class="p">(</span><span class="n">M</span><span class="p">)</span> <span class="o">/</span> <span class="n">mean</span><span class="p">(</span><span class="n">M</span><span class="p">))</span>
+	
+	<span class="n">s2</span> <span class="o">=</span> <span class="n">sums</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">squared</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">s2</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+		
+<div class="viewcode-block" id="get_angle"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.get_angle">[docs]</a><span class="k">def</span> <span class="nf">get_angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">,</span> <span class="n">asCosine</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span><span class="n">degrees</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Returns the angle of two vectors&quot;&quot;&quot;</span>
+	<span class="n">cosine</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">cosine</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">()</span>
+		<span class="k">return</span> <span class="bp">None</span>
+	<span class="k">if</span> <span class="n">asCosine</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">cosine</span>
+	<span class="k">elif</span> <span class="ow">not</span> <span class="n">asCosine</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">degrees</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cosine</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cosine</span><span class="p">))</span>
+	</div>
+<div class="viewcode-block" id="display_multiple_images"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.display_multiple_images">[docs]</a><span class="k">def</span> <span class="nf">display_multiple_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Display multiple images via the numpy hstack() function&quot;&quot;&quot;</span>
+	<span class="n">nimg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+	<span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">nimg</span><span class="p">)</span>
+	</div>
+<div class="viewcode-block" id="rectangular_crop"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.rectangular_crop">[docs]</a><span class="k">def</span> <span class="nf">rectangular_crop</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rx</span><span class="p">):</span> 
+	<span class="sd">&quot;&quot;&quot;Perform a rectangular crop to points of the type (y,x)&quot;&quot;&quot;</span>
+	<span class="n">points2</span> <span class="o">=</span> <span class="n">points</span>
+	<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points2</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ry</span> <span class="ow">or</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points2</span><span class="p">)</span> <span class="o">-</span> <span class="n">ry</span><span class="p">:</span>
+			<span class="k">del</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+		<span class="k">elif</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">rx</span> <span class="ow">or</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points2</span><span class="p">)</span> <span class="o">-</span> <span class="n">rx</span><span class="p">:</span>
+			<span class="k">del</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">points2</span>
+	</div>
+<div class="viewcode-block" id="ShapeAnalyzer"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">ShapeAnalyzer</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot;Developed for image shape analysis&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">threshold1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">threshold2</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;ShapeAnalyzer Class Constructor. It generates results by performing:</span>
+<span class="sd">		1. a Gaussian Blur filter</span>
+<span class="sd">		2. Otsu&#39;s Threshold and Binary Threshold</span>
+<span class="sd">		3. Canny Edge Detection</span>
+<span class="sd">		4. Second binary threshold</span>
+<span class="sd">		5. calculations to find extreme points (TM,BM,LM,RM)</span>
+<span class="sd">		Besides this, it:</span>
+<span class="sd">		6. computes four characteristic vectors connecting the extreme points</span>
+<span class="sd">		7. finds the area of the formed polygon via cross product</span>
+<span class="sd">		8. finds total length in XY directions via dot product with the base vectors i=[0,1] j=[1,0] if points have type of (y,x)		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+		<span class="c"># Otsu&#39;s thresholding after Gaussian filtering</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">blur</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ret</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">th</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blur</span><span class="p">,</span><span class="n">threshold1</span><span class="p">,</span><span class="n">threshold2</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span><span class="o">+</span><span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+	
+		<span class="c">#Canny Edge Detection and second threshold</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">canny_edges</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ret2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">th2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canny_edges</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span><span class="p">)</span>		
+		<span class="bp">self</span><span class="o">.</span><span class="n">th2d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">th2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c">#for drawing the lines</span>
+
+		<span class="c">#image details</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">th2</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span> <span class="o">=</span> <span class="p">[],[]</span>
+
+		<span class="c">#CAUTION! Points are of the form (y,x)</span>
+		<span class="c"># Point filtering</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">):</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">th2</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span><span class="p">);</span> <span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wPoints</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bPoints</span>
+		
+		<span class="c">#Extreme points</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">topmost</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+		
+		<span class="c">#Characteristic Vectors</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">))</span>
+	
+		<span class="c">#area of polygon defined by the vectors a,b,c,d</span>
+
+	
+		<span class="c">#Length in x and y directions</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">ly</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">lx</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span>
+		
+		<span class="bp">self</span><span class="o">.</span><span class="n">__details</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Height: &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">),</span> <span class="s">&#39;Width: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">),</span> <span class="s">&#39;Total Length (X): &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lx</span><span class="p">),</span> <span class="s">&#39;Total Length (Y): &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ly</span><span class="p">)]</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">rhombus_area</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ly</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mean_area</span> <span class="o">=</span> <span class="n">mean</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhombus_area</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">area_standard_deviation</span> <span class="o">=</span> <span class="n">standard_deviation</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhombus_area</span><span class="p">])</span>	
+			
+<div class="viewcode-block" id="ShapeAnalyzer.print_details"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.print_details">[docs]</a>	<span class="k">def</span> <span class="nf">print_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Print shape analysis results&quot;&quot;&quot;</span>
+		<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">details</span><span class="p">:</span>
+			<span class="k">print</span> <span class="n">d</span>
+		</div>
+<div class="viewcode-block" id="ShapeAnalyzer.draw_extreme_points_lines"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.draw_extreme_points_lines">[docs]</a>	<span class="k">def</span> <span class="nf">draw_extreme_points_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Draws lines that join the extreme points together&quot;&quot;&quot;</span>
+		<span class="c">#tuples are reversed here</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">200</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">200</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">150</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">150</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leftmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">150</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">150</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+	</div>
+<div class="viewcode-block" id="ShapeAnalyzer.display_steps"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.display_steps">[docs]</a>	<span class="k">def</span> <span class="nf">display_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Displays the shape analysis steps&quot;&quot;&quot;</span>
+		<span class="n">title</span> <span class="o">=</span> <span class="s">&#39;Shape analysis&#39;</span>
+		<span class="n">display_multiple_images</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">blur</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">th</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">canny_edges</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">),</span><span class="n">title</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ShapeAnalyzer.write_steps"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.write_steps">[docs]</a>	<span class="k">def</span> <span class="nf">write_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dir</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Exports steps to a directory&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_dir</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)):</span>
+			<span class="n">_dir</span> <span class="o">=</span> <span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;gaussian_blur.jpg&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blur</span><span class="p">)</span> 
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;otsu_threshold.jpg&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">th</span><span class="p">)</span> 
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;canny_edges.jpg&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canny_edges</span><span class="p">)</span> 
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;final_image.jpg&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">)</span>
+		</div>
+<div class="viewcode-block" id="ShapeAnalyzer.write_final_image"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.write_final_image">[docs]</a>	<span class="k">def</span> <span class="nf">write_final_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dir</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Writes final image to storage&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_dir</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)):</span>
+			<span class="n">_dir</span> <span class="o">=</span> <span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">_dir</span> <span class="o">+</span> <span class="s">&#39;final_image.jpg&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">)</span>  
+</div>
+<div class="viewcode-block" id="ShapeAnalyzer.draw_details"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.draw_details">[docs]</a>	<span class="k">def</span> <span class="nf">draw_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Draws the details on the image&quot;&quot;&quot;</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__details</span><span class="p">)):</span>
+			<span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__details</span><span class="p">[</span><span class="n">i</span><span class="p">],(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_COMPLEX_SMALL</span><span class="p">,</span> <span class="mi">1</span><span class="p">,(</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+			</div>
+<div class="viewcode-block" id="ShapeAnalyzer.calculate_morphometrics_according_to_specimen"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.calculate_morphometrics_according_to_specimen">[docs]</a>	<span class="k">def</span> <span class="nf">calculate_morphometrics_according_to_specimen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fish</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Calculates morphometrics according to specimen&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lx</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ly</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">TL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lx</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">TL</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ly</span>
+			
+		<span class="bp">self</span><span class="o">.</span><span class="n">HL</span> <span class="o">=</span> <span class="n">fish</span><span class="o">.</span><span class="n">morphometrics</span><span class="o">.</span><span class="n">cHL</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">TL</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">FL</span> <span class="o">=</span> <span class="n">fish</span><span class="o">.</span><span class="n">morphometrics</span><span class="o">.</span><span class="n">cFL</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">TL</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">SL</span> <span class="o">=</span> <span class="n">fish</span><span class="o">.</span><span class="n">morphometrics</span><span class="o">.</span><span class="n">cSL</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">TL</span> <span class="c">#NOT SURE</span>
+		</div>
+<div class="viewcode-block" id="ShapeAnalyzer.draw_morphometric_lines_according_to_specimen"><a class="viewcode-back" href="../../api.html#lib.shape_analyzer.ShapeAnalyzer.draw_morphometric_lines_according_to_specimen">[docs]</a>	<span class="k">def</span> <span class="nf">draw_morphometric_lines_according_to_specimen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fish</span><span class="p">,</span><span class="n">thickness</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Draws morphometrics as lines according to defined specimen&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">calculate_morphometrics_according_to_specimen</span><span class="p">(</span><span class="n">fish</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topmost</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HL</span><span class="p">)),(</span><span class="mi">200</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+		<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">th2d</span><span class="p">,</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottommost</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">FL</span><span class="p">)),</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">thickness</span><span class="p">)</span>
+</div>
+	<span class="k">def</span> <span class="nf">export_details_to_CSV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c">#TODO CSV for PostgreSQL </span>
+		<span class="k">pass</span>
+		
+				</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+	<span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s">&#39;/home/marios/1.jpg&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+	<span class="kn">from</span> <span class="nn">fish</span> <span class="kn">import</span> <span class="n">Fish</span>
+	<span class="c">#a dumb fish</span>
+	<span class="n">f1</span> <span class="o">=</span> <span class="n">Fish</span><span class="p">(</span><span class="s">&#39;f1&#39;</span><span class="p">,</span><span class="n">cHL</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">cFL</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">cSL</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+	<span class="n">s</span> <span class="o">=</span> <span class="n">ShapeAnalyzer</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+	<span class="n">s</span><span class="o">.</span><span class="n">draw_extreme_points_lines</span><span class="p">()</span>
+	<span class="n">s</span><span class="o">.</span><span class="n">draw_details</span><span class="p">()</span>
+	<span class="n">s</span><span class="o">.</span><span class="n">draw_morphometric_lines_according_to_specimen</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+	<span class="n">s</span><span class="o">.</span><span class="n">draw_morphometric_lines_according_to_specimen</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+	<span class="c">#s.write_steps(&#39;/home/marios/Dropbox&#39;)</span>
+	<span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">area</span>
+	<span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">rhombus_area</span>
+	<span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">mean_area</span>
+	<span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">area_standard_deviation</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Triton FPR v0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Marios Papachristou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

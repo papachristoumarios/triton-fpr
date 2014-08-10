@@ -1,3 +1,0 @@
-install:
-	python install.py
-	
