@@ -39,7 +39,19 @@
 				step: 1
 			Label:
 				text: str(sl2.value)
-		
+		BoxLayout:
+			orientation: 'horizontal'
+			Label:
+				text: 'Mode'
+			Spinner:
+				id: modes_spinner
+				values: ('BFORB', 'BFSIFT', 'SIFTH')
+				size: (200, 50)
+			Label:
+				text: 'Homogeneity Control'
+			CheckBox:
+				id: cv_test_checkbox
+			
 		
 		BoxLayout:
 			orientation: 'horizontal'
@@ -81,23 +93,27 @@
 		
 <IdentifierInterface>:
 	BoxLayout:
-		orientation: 'vertical'
-		padding: 2*[30,40]
-		spacing: 15
-		Label:
-			id: output_label
-			text: root.get_artifacts()
-		Button:
-			id: morph_button
-			text: 'Get Morphometrics'
-			on_press: root.show_morphometrics()
-		Button:
-			id: gen_report_button
-			text: 'Generate Report'
-		Button:
-			id: close_button
-			text: 'Close'
-			on_press: root.close()
+		orientation: 'horizontal'
+		Image:
+			source: root.get_source()
+		BoxLayout:
+			orientation: 'vertical'
+			padding: 2*[30,40]
+			spacing: 15
+			Label:
+				id: output_label
+				text: root.get_artifacts()
+			Button:
+				id: morph_button
+				text: 'Get Morphometrics'
+				on_press: root.show_morphometrics()
+			Button:
+				id: gen_report_button
+				text: 'Generate Report'
+			Button:
+				id: close_button
+				text: 'Close'
+				on_press: root.close()
 			
 <AboutDialog>
 	BoxLayout:
@@ -135,6 +151,9 @@
 			Button:
 				text: "Draw morphometrics' lines"
 				on_press: root.draw_ml()
+			Button:
+				text: 'Save'
+				on_press: root.save()
 			Button:
 				text: 'Close'
 				on_press: root.close()

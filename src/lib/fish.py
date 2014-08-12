@@ -1,4 +1,4 @@
-from BFORB import *
+from detectors import *
 
 class Fish:
 	"""Stores info for each fish"""
@@ -137,15 +137,37 @@ class FishDatabase(Database):
 		return None 
 		
 		
-	def identify2(self, img):
-		"""Performs Brute-force ORB Identification process"""
+	def identify2(self, img, mode='BFORB', cv_check=False):
+		"""Performs Identification process. Please specify 'mode' as:
+		1. BFORB for Brute-force matching with  ORB Features
+		2. BFORB for Brute-force matching SIFT Features
+		3. SIFTH for SIFT and Holography Feature Detection"""
+		
 		d = {}
-		for m in self.members:
-			if m.images_dir != None:
-				m.image_set = BruteForceORBFeatureMatching().ImageSet(m.name, m.images_dir)
-				d[m.image_set.get_matches(img,check_homogenity=False)[1]] = m
-		r =  d[max(d.keys())]
-		print r.code, r.name, 'found'
-		return r
-
+		if mode == 'BFORB':
+			for m in self.members:
+				if m.images_dir != None:
+					m.image_set = BruteForceORBFeatureMatching().ImageSet(m.name, m.images_dir)
+					d[m.image_set.get_matches(img,check_homogenity=cv_check)[1]] = m
+			r =  d[max(d.keys())]
+			print r.code, r.name, 'found'
+			return r
+		elif mode == 'BFSIFT':
+			for m in self.members:
+				if m.images_dir != None:
+					m.image_set = BruteForceSIFTFeatureMatching().ImageSet(m.name, m.images_dir)
+					d[m.image_set.get_matches(img,check_homogenity=False)[1]] = m
+			r =  d[max(d.keys())]
+			print r.code, r.name, 'found'
+			return r
+		elif mode == 'SIFTH':
+			for m in self.members:
+				if m.images_dir != None:
+					m.image_set = SIFTHolographyFeatureMatching().ImageSet(m.name, m.images_dir)
+					d[m.image_set.get_matches(img,check_homogenity=False)[1]] = m
+			r =  d[max(d.keys())]
+			print r.code, r.name, 'found'
+			return r
+		else:
+			return None
 			

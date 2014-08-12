@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 
 #general imports
-import Image,cv2,sys,time; import numpy as np
+import Image,cv2,sys,time,os; import numpy as np
 
 #kivy imports
 from kivy.app import App
@@ -20,7 +20,7 @@ class LoadDialog(BoxLayout):
 	"""Load dialog"""
 	def load(self):
 		"""Loads defined image"""
-		global selected_image,chanelled_image
+		global selected_image,chanelled_image, selected_image_filename
 		selected_image_filename = self.ids['load_filechooser'].selection[0]
 		try:
 			Image.open(selected_image_filename)
@@ -37,7 +37,7 @@ class LoadDialog(BoxLayout):
 		load_popup.dismiss()
 		
 	def get_home(self):
-		import os; return os.getenv('HOME')
+		return os.getenv('HOME')
 		
 class AboutDialog(BoxLayout):
 	
@@ -61,13 +61,16 @@ Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
 class IdentifierInterface(BoxLayout):
 	
 	def get_artifacts(self):
-		return 'Species: {0} HCMR Code: {1}'.format(identified_specimen.name, identified_specimen.code)
+		return 'Species: {0} Code: {1}'.format(identified_specimen.name, identified_specimen.code)
 		
 	def show_morphometrics(self):
 		self.ids['output_label'].text +=  ('\n' + str(identified_specimen.get_morphometrics()))
 	
 	def close(self):
 		identifier_interface_popup.dismiss()
+		
+	def get_source(self):
+		return selected_image_filename
 			
 class ShapeAnalyzerInterface(BoxLayout):
 	
@@ -87,9 +90,15 @@ class ShapeAnalyzerInterface(BoxLayout):
 		selected_image_shape_analyzer.write_final_image(TEMP_DIR)
 		#EOE
 		self.refresh()
+		
+	def save(self):
+		cv2.imwrite('{0}/output.jpg'.format(os.getenv('HOME')),selected_image_shape_analyzer.drawn_img)
+		print 'Success'
 				
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
+	
+	global choices; 
 	
 	def get_banner(self):
 		return BANNER
@@ -113,10 +122,15 @@ class Interface(BoxLayout):
 		identified_specimen = fishbase.identify(chanelled_image)
 		
 	def perform_identification2(self):
+		
+		c = str(self.ids['modes_spinner'].text)
+		if c == '':
+			c = 'BFORB'
+		print c
 		_t = time.time()
 		global identified_specimen
 		try:
-			identified_specimen = fishbase.identify2(chanelled_image)
+			identified_specimen = fishbase.identify2(chanelled_image,mode=c,cv_check=self.ids['cv_test_checkbox'].active)
 			_dt = time.time() - _t
 		except NameError:
 			print 'Specimen is not defined!'
@@ -147,6 +161,8 @@ class Interface(BoxLayout):
 		selected_image_shape_analyzer = None
 		chanelled_image = None
 		print 'Cleared'
+		
+		
 
 class MainGUIApp(App):
 	"""Main GUI Application"""
