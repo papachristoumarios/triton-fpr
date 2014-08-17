@@ -78,6 +78,7 @@ class ShapeAnalyzerInterface(BoxLayout):
 		shape_analyzer_popup.dismiss()
 		
 	def refresh(self):
+		"""Reloads the image"""
 		self.ids['shape_analyzed_image'].reload()
 		
 	def draw_el(self):
@@ -92,18 +93,18 @@ class ShapeAnalyzerInterface(BoxLayout):
 		self.refresh()
 		
 	def save(self):
+		"""Saves the output image to the home folder"""
 		cv2.imwrite('{0}/output.jpg'.format(os.getenv('HOME')),selected_image_shape_analyzer.drawn_img)
 		print 'Success'
 				
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
-	
-	global choices; 
-	
+		
 	def get_banner(self):
 		return BANNER
 				
 	def show_load(self):
+		"""Shows the load dialog"""
 		global load_popup
 		load_popup = Popup(title='Load an Image',
 		content=LoadDialog(),
@@ -111,6 +112,7 @@ class Interface(BoxLayout):
 		load_popup.open()
 			
 	def show_about_dialog(self):
+		"""Shows the about dialog"""
 		global about_dialog_popup
 		about_dialog_popup = Popup(title= 'About',
 		content = AboutDialog(),
@@ -118,11 +120,15 @@ class Interface(BoxLayout):
 		about_dialog_popup.open()
 		
 	def perform_identification(self):
+		"""DEPRECATED: Please use perform_identification2. Performs identification based on Haar features"""
 		global identified_specimen
 		identified_specimen = fishbase.identify(chanelled_image)
 		
 	def perform_identification2(self):
-		
+		"""Calls FishDatabase.identify2 to perform identification using one of the three methods:
+		1. Brute-force matcher ORB Features	
+		2. Brute-force matcher SIFT Features	
+		3. SIFT Features and Holography"""	
 		c = str(self.ids['modes_spinner'].text)
 		if c == '':
 			c = 'BFORB'
@@ -142,6 +148,7 @@ class Interface(BoxLayout):
 		identifier_interface_popup.open()
 			
 	def perform_shape_analysis(self):
+		"""Calls the shape analyzer to perform shape analysis"""
 		global selected_image_shape_analyzer
 		_threshold1 = int(self.ids['sl1'].value)
 		_threshold2 = int(self.ids['sl2'].value)

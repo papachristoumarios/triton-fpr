@@ -27,18 +27,13 @@ class Fish:
 		for k in names.keys():
 			result += '{0} : {1} of TL\n'.format(k,names[k])
 		return result
-		
 			
 class Morphometrics(Fish):
 	"""Morphometrics are stored at this class"""
 	def __init__(self, cHL=0, cFL=0, cSL=0, cPdL=0, cPpL=0, cPpeL=0,cBD=0, cPoL=0, cPcL=0, cED=0, cPaL=0):
 		self.cHL, self.cFL, self.cSL, self.cPdL, self.cPpL, self.cPpeL, self.cBD, self.cPoL, self.cPcL, self.cED, self.cPaL =  cHL, cFL, cSL, cPdL, cPpL, cPpeL, cBD, cPoL, cPcL, cED, cPaL
-	
-		
-class DatabaseConnection:
-	pass
 
-class Database(DatabaseConnection):
+class Database:
 	"""Handle PostgreSQL databases"""
 	def __init__(self, datasource_url):
 		"""Initializes a connection and its cursor using the psycopg2 module for talking with Postgres databases""" 	
@@ -100,6 +95,7 @@ class FishDatabase(Database):
 			return features #returns feature name, xml-dir
 			
 	def query_code(self, code, name=False):
+		"""Returns a member of the database depending on its code"""
 		for m in self.members:
 			if m.code is code:
 				if name:
@@ -108,6 +104,7 @@ class FishDatabase(Database):
 		return None
 		
 	def query_images_dir(self, code):
+		"""Returns the images directory using an SQL query""" 
 		r = self.db.query('''SELECT * FROM "IMAGES_DIR" WHERE "CD_SPECIES"='{0}';'''.format(code))
 		try:
 			return r[0][2]
@@ -116,7 +113,7 @@ class FishDatabase(Database):
 		
 	#open image in 0 mode
 	def identify(self,img, draw=False, detectCharacteristics=False):
-		"""Performs the identification process based on Haar-like features from the members of 'this' base. Returns a Fish if found, otherwise None"""
+		"""DEPRECATED: Please use identify2. Performs the identification process based on Haar-like features from the members of 'this' base. Returns a Fish if found, otherwise None"""
 		import cv2; timg = img.copy()
 		for m in self.members:
 			cascade = cv2.CascadeClassifier(m.bodycascade)
@@ -136,13 +133,11 @@ class FishDatabase(Database):
 				return m
 		return None 
 		
-		
 	def identify2(self, img, mode='BFORB', cv_check=False):
 		"""Performs Identification process. Please specify 'mode' as:
 		1. BFORB for Brute-force matching with  ORB Features
 		2. BFORB for Brute-force matching SIFT Features
 		3. SIFTH for SIFT and Holography Feature Detection"""
-		
 		d = {}
 		if mode == 'BFORB':
 			for m in self.members:
