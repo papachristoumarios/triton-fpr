@@ -23,7 +23,6 @@ from kivy.uix.popup import Popup
 #Project Libraries
 #lib package
 import lib.fish as fish
-import lib.manipulator as manipulator
 import lib.shape_analyzer as shape_analyzer
 import lib.config_parser as config_parser
 #gui

@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import os,sys, cv2
 from PIL import Image
 import numpy as np

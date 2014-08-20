@@ -32,6 +32,7 @@ class LoadDialog(BoxLayout):
 			selected_image = None
 			raise Exception('Bad Input')
 			
+			
 	def cancel(self):
 		"""Dismisses the popup"""
 		load_popup.dismiss()
@@ -169,7 +170,35 @@ class Interface(BoxLayout):
 		chanelled_image = None
 		print 'Cleared'
 		
+	def show_scripts_interface(self):
+		global scripts_dialog_popup
+		scripts_dialog_popup = Popup(title= 'Select a script...',
+		content = ScriptsInterface(),
+		size_hint=(None,None), size=(500,500))
+		scripts_dialog_popup.open()
 		
+	def capture_image(self):
+		global selected_image,chanelled_image,selected_image_filename
+		selected_image_filename = '{0}/capture.jpg'.format(TEMP_DIR)
+		s, selected_image = cam.read()
+		chanelled_image = cv2.cvtColor(selected_image, cv2.COLOR_BGR2GRAY)
+		cv2.imwrite(selected_image_filename, selected_image)
+		print 'Ok'
+		
+
+class ScriptsInterface(BoxLayout):
+	
+	def get_scripts(self):
+		import glob
+		results = []
+		flst = glob.glob('./scripts/*.py')
+		return tuple(flst)
+					
+	def run_script(self):
+		os.system('{0} {1} {2}'.format('python', self.ids['scripts_spinner'].text, self.ids['args_textinput'].text))
+		
+	def close(self):
+		scripts_dialog_popup.dismiss()
 
 class MainGUIApp(App):
 	"""Main GUI Application"""
@@ -180,10 +209,11 @@ class MainGUIApp(App):
 
 	def _setup(self,fb, banner, tmp_dir='/tmp'):
 		"""Sets up global parameters"""
-		global fishbase, BANNER, TEMP_DIR
+		global fishbase, BANNER, TEMP_DIR, cam
 		fishbase = fb
 		BANNER = banner
 		TEMP_DIR = tmp_dir
+		cam = cv2.VideoCapture(0)
 
 if __name__ == '__main__':
 	"""Executed if standalone"""

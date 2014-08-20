@@ -16,6 +16,10 @@
 				text: 'Select An image'
 				on_press: root.show_load()
 			Button:
+				id: capture_button
+				text: 'Capture Image from Camera'
+				on_press: root.capture_image()
+			Button:
 				text: 'Clear All'
 				on_press: root.clear_all()
 		
@@ -61,6 +65,10 @@
 			Button:
 				text: 'Perform Shape Analysis'
 				on_release: root.perform_shape_analysis()
+		Button:
+			id: scripts_button
+			text: 'Scripts'
+			on_press: root.show_scripts_interface()
 		Button:
 			id: about_button
 			text: 'About'
@@ -157,3 +165,26 @@
 			Button:
 				text: 'Close'
 				on_press: root.close()
+
+<ScriptsInterface>
+	orientation: 'vertical'
+	padding: 2*[30,40]
+	Spinner:
+		id: scripts_spinner
+		values: root.get_scripts()
+		size: (200, 50)
+	BoxLayout:
+		orientation: 'horizontal'
+		Label:
+			text: 'Arguments'
+		TextInput:
+			id: args_textinput
+	BoxLayout:
+		orientation: 'horizontal'
+		Button:
+			text: 'Run'
+			on_press: root.run_script()
+		Button:
+			text: 'Close'
+			on_press: root.close()
+		
