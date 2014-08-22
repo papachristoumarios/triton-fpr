@@ -88,11 +88,11 @@ class FishDatabase(Database):
 		r = self.db.query('''SELECT * FROM "CASCADE_MASTER" WHERE "CD_SPECIES"='{0}' AND "CD_CASCADE"!='BC';'''.format(code))
 		features = []
 		if len(r) is 0:
-			return [()]
+			return []
 		else:
-			for e in r:
-				features.append(r[1:])
-			return features #returns feature name, xml-dir
+			for _r in r:
+				features.append(_r[3])
+		return features
 			
 	def query_code(self, code, name=False):
 		"""Returns a member of the database depending on its code"""

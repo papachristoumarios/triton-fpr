@@ -3,12 +3,9 @@
 		orientation: 'vertical'
 		padding: 2*[30,40]
 		spacing: 15
-		BoxLayout:
-			Image:
-				id: banner_image
-				source: root.get_banner()
-			Label:
-				text: 'Triton-FPR Project. HCMR 2014'
+		Image:
+			id: banner_image
+			source: root.get_banner()
 		BoxLayout:
 			orientation: 'horizontal'
 			Button:
@@ -159,6 +156,9 @@
 			Button:
 				text: "Draw morphometrics' lines"
 				on_press: root.draw_ml()
+			Button:
+				text: "Draw Haar-like features"
+				on_press: root.draw_haar_like_features()
 			Button:
 				text: 'Save'
 				on_press: root.save()

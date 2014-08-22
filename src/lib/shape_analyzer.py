@@ -207,11 +207,12 @@ class ShapeAnalyzer:
 		self.draw_morphometric_line('SL', self.SL, self.topmost, tilt=(-15,0))
 		self.draw_morphometric_line('FL', self.FL, self.topmost)
 
-
-	def export_details_to_CSV(self): #TODO CSV for PostgreSQL 
-		pass
-		
-		
+	def draw_haar_feature(self, xml_file):
+		cascade = cv2.CascadeClassifier(xml_file)
+		features = cascade.detectMultiScale(self.image)
+		for (x,y,w,h) in features: 
+			cv2.rectangle(self.drawn_img, (x,y), (x+w, y+h), (255,255,255), 3)
+	
 class Contour:
     ''' Provides detailed parameter informations about a contour
 

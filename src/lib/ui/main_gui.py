@@ -44,10 +44,7 @@ class AboutDialog(BoxLayout):
 	
 	def get_about_text(self):
 		"""Returns the about text"""
-		about_txt = '''Copyright HCMR 2014 - Triton FPR Project
-This project is released under the {add licensing} License
-Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
-		
+		about_txt = '''Author: Marios Papachristou <mrmarios97@gmail.com>'''
 		return about_txt
 		
 	def go_to_homepage(self):
@@ -62,7 +59,7 @@ Author: Marios Papachristou | Contact: mrmarios97@gmail.com'''
 class IdentifierInterface(BoxLayout):
 	
 	def get_artifacts(self):
-		return 'Species: {0} Code: {1}'.format(identified_specimen.name, identified_specimen.code)
+		return 'Species: {0}\nCode: {1}'.format(identified_specimen.name, identified_specimen.code)
 		
 	def show_morphometrics(self):
 		self.ids['output_label'].text +=  ('\n' + str(identified_specimen.get_morphometrics()))
@@ -80,23 +77,26 @@ class ShapeAnalyzerInterface(BoxLayout):
 		
 	def refresh(self):
 		"""Reloads the image"""
+		selected_image_shape_analyzer.write_final_image(TEMP_DIR)
 		self.ids['shape_analyzed_image'].reload()
 		
 	def draw_el(self):
 		selected_image_shape_analyzer.draw_extreme_points_lines()
-		selected_image_shape_analyzer.write_final_image(TEMP_DIR)
 		self.refresh()
 		
 	def draw_ml(self):
 		selected_image_shape_analyzer.draw_morphometric_lines_according_to_specimen(identified_specimen)
-		selected_image_shape_analyzer.write_final_image(TEMP_DIR)
-		#EOE
 		self.refresh()
 		
 	def save(self):
 		"""Saves the output image to the home folder"""
 		cv2.imwrite('{0}/output.jpg'.format(os.getenv('HOME')),selected_image_shape_analyzer.drawn_img)
 		print 'Success'
+		
+	def draw_haar_like_features(self):
+		for f in identified_specimen.fcascades:
+			selected_image_shape_analyzer.draw_haar_feature(f)
+		self.refresh()
 				
 class Interface(BoxLayout):
 	"""Class that handles the main interface"""
