@@ -212,6 +212,8 @@ class ShapeAnalyzer:
 		features = cascade.detectMultiScale(self.image)
 		for (x,y,w,h) in features: 
 			cv2.rectangle(self.drawn_img, (x,y), (x+w, y+h), (255,255,255), 3)
+			if len(features) is 1:
+				print 'x={0},y={1},w={2},h={3}, cascade={4}'.format(x,y,w,h,xml_file)
 	
 class Contour:
     ''' Provides detailed parameter informations about a contour
