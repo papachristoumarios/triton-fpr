@@ -1,1 +1,1 @@
-C:\Python27\python.exe src\main.py
+cd src && C:\Python27\python.exe main.py

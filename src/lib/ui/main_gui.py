@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 
 #general imports
-import Image,cv2,sys,time,os; import numpy as np
+import Image,cv2,sys,time,os,platform; import numpy as np
 
 #kivy imports
 from kivy.app import App
@@ -38,6 +38,8 @@ class LoadDialog(BoxLayout):
 		load_popup.dismiss()
 		
 	def get_home(self):
+		if 'Windows' in platform.system():
+			return '''..\data'''
 		return os.getenv('HOME')
 		
 class AboutDialog(BoxLayout):
@@ -72,6 +74,12 @@ class IdentifierInterface(BoxLayout):
 			
 class ShapeAnalyzerInterface(BoxLayout):
 	
+	def get_source(self):
+		if 'Windows' in platform.system():
+			return '''C:\Temp\final_image.jpg'''
+		else:
+			return '/tmp/final_image.jpg'
+	
 	def close(self):
 		shape_analyzer_popup.dismiss()
 		
@@ -90,7 +98,10 @@ class ShapeAnalyzerInterface(BoxLayout):
 		
 	def save(self):
 		"""Saves the output image to the home folder"""
-		cv2.imwrite('{0}/output.jpg'.format(os.getenv('HOME')),selected_image_shape_analyzer.drawn_img)
+		if 'Windows' in platform.system():
+			cv2.imwrite('''C:\output.jpg''',selected_image_shape_analyzer.drawn_img)
+		else:	
+			cv2.imwrite('{0}/output.jpg'.format(os.getenv('HOME')),selected_image_shape_analyzer.drawn_img)
 		print 'Success'
 		
 	def draw_haar_like_features(self):

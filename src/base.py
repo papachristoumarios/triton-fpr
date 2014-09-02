@@ -68,6 +68,6 @@ def get_temp_dir():
 	if 'Linux' in p:
 		return '/tmp'
 	elif 'Windows' in p:
-		return 'C:\Temp'
+		return '''C:\Temp'''
 	else:
 		return '/'
