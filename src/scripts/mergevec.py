@@ -1,24 +1,3 @@
-"""
-	This file contains a function that merges .vec files called "merge_vec_files". 
-	I made it as a replacement for mergevec.cpp (created by Naotoshi Seo. 
-	See: http://note.sonots.com/SciSoftware/haartraining/mergevec.cpp.html) 
-	in order to avoid recompiling openCV with mergevec.cpp. 
-
-	To use the function:
-	(1) Place all .vec files to be merged in a single directory (vec_directory).
-	(2) Navigate to this file in your CLI (terminal or cmd) and type "python mergevec.py -v your_vec_directory -o your_output_filename".
-
-		The first argument (-v) is the name of the directory containing the .vec files
-		The second argument (-o) is the name of the output file
-
-	To test the output of the function:
-	(1) Install openCV.
-	(2) Navigate to the output file in your CLI (terminal or cmd).
-	(2) Type "opencv_createsample -w img_width -h img_height -vec output_filename". 
-		This should show the .vec files in sequence.
-
-"""
-
 import sys
 import glob
 import struct
